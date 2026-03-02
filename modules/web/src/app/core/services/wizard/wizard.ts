@@ -56,6 +56,14 @@ export class WizardService {
       }
     }
 
+    hideProviderSettings(hasSinglePreset: boolean): void {
+      if (hasSinglePreset) {
+        this._hideStep(StepRegistry.ProviderSettings);
+      } else {
+        this._showStep(StepRegistry.ProviderSettings);
+      }
+    }
+
     private _hideStep(step: StepRegistry): void {
       this._parent.steps?.forEach((item, idx) => {
         if (item.name === step) {
@@ -108,6 +116,10 @@ export class WizardService {
 
   forceHandleProviderChange(provider: NodeProvider) {
     this._stepHandler.handleProviderChange(provider);
+  }
+
+  handleSingleProviderPreset(hasSinglePreset: boolean): void {
+    this._stepHandler.hideProviderSettings(hasSinglePreset);
   }
 
   reset(): void {

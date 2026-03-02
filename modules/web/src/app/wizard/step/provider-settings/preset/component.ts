@@ -17,6 +17,7 @@ import {FormBuilder, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validators} 
 import {ClusterSpecService} from '@core/services/cluster-spec';
 import {ProjectService} from '@core/services/project';
 import {PresetsService} from '@core/services/wizard/presets';
+import {WizardService} from '@core/services/wizard/wizard';
 import {Cluster} from '@shared/entity/cluster';
 import {Preset, SimplePresetList} from '@shared/entity/preset';
 import {BaseFormValidator} from '@shared/validators/base-form.validator';
@@ -64,7 +65,8 @@ export class PresetsComponent extends BaseFormValidator implements OnInit, OnDes
     private readonly _presets: PresetsService,
     private readonly _builder: FormBuilder,
     private readonly _projectService: ProjectService,
-    private readonly _clusterSpecService: ClusterSpecService
+    private readonly _clusterSpecService: ClusterSpecService,
+    private readonly _wizard: WizardService
   ) {
     super('Preset');
   }
@@ -115,6 +117,13 @@ export class PresetsComponent extends BaseFormValidator implements OnInit, OnDes
         this.presetsLoaded = this.presetList.names ? !_.isEmpty(this.presetList.names) : false;
         this._state = this.presetsLoaded ? PresetsState.Ready : PresetsState.Empty;
         this._enable(this._state !== PresetsState.Empty, Controls.Preset);
+
+        // If only a single provider exists, select it and hide provider settings step.
+        const hasSinglePreset = this.presetList.names?.length === 1;
+        if (hasSinglePreset) {
+          this.selectedPreset = this.presetList.names[0];
+        }
+        this._wizard.handleSingleProviderPreset(hasSinglePreset);
       });
 
     this.form
